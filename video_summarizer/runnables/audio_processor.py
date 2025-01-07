@@ -1,13 +1,15 @@
 from langchain.schema.runnable import Runnable
 import uuid
 import subprocess
-from ..common import VideoMetadata
-
+from ..common import VideoDescriptor, global_console
+from ..helpers import remove_file
 
 class AudioProcessorRunnable(Runnable):
-    def invoke(self, input: VideoMetadata, *args) -> str:
-        audio_file_path = input.audio_file
-        return self.process_audio(audio_file_path)
+
+    def invoke(self, input: VideoDescriptor, *args) -> VideoDescriptor:
+        global_console.log("Processing audio")
+        input.audio_file = self.process_audio(input.audio_file)
+        return input
 
     @staticmethod
     def process_audio(file_path) -> str:
@@ -27,4 +29,5 @@ class AudioProcessorRunnable(Runnable):
             stderr=subprocess.STDOUT
         )
 
+        remove_file(file_path)
         return output_file

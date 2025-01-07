@@ -13,9 +13,12 @@ def suppress_stdout():
         finally:
             sys.stdout = old_stdout
 
-def validate_url(url):
+def validate_url(url: str) -> bool:
     try:
         result = urlparse(url)
         return all([result.scheme, result.netloc])
     except AttributeError:
         return False
+
+def remove_file(file_path: str) -> None:
+    os.remove(file_path)
