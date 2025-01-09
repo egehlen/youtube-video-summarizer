@@ -1,7 +1,6 @@
 from langchain.schema.runnable import Runnable
 from rich.box import SIMPLE
 from ..common import VideoDescriptor, global_console
-from ..helpers import get_target_language
 from rich.table import Table
 from rich.panel import Panel
 
@@ -59,7 +58,7 @@ class DisplayOutputRunnable(Runnable):
 
         table = Table(box=SIMPLE)
         table.add_column("Highlights", justify="left", style="green")
-        for highlight in descriptor.highlights: table.add_row(f" - {highlight};")
+        for highlight in descriptor.highlights: table.add_row(f" - {highlight}")
         return table
 
     @staticmethod
@@ -69,5 +68,5 @@ class DisplayOutputRunnable(Runnable):
 
         table = Table(box=SIMPLE)
         table.add_column("Steps", justify="left", style="magenta")
-        for i, step in enumerate(descriptor.steps): table.add_row(f" {(i+1)}. {step};")
+        for i, step in enumerate(descriptor.steps): table.add_row(f" {(i+1)}. {step}")
         return table
