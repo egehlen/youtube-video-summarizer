@@ -14,17 +14,20 @@ class TranscriberRunnable(Runnable):
 
     def invoke(self, input: VideoDescriptor, *args) -> VideoDescriptor:
         global_console.log("Transcribing")
-        input.transcription = self.transcribe_audio(input)
+        self.transcribe_audio(input)
         return input
 
-    def transcribe_audio(self, input: VideoDescriptor) -> str:
+    def transcribe_audio(self, descriptor: VideoDescriptor) -> None:
+
         with suppress_stdout():
-            with open(input.audio_file, "rb") as file:
+
+            with open(descriptor.processed_audio_file, "rb") as file:
+
                 response = self.llm_client.audio.transcriptions.create(
-                    file=(input.audio_file, file.read()),
+                    file=(descriptor.processed_audio_file, file.read()),
                     model="whisper-large-v3-turbo",
                     response_format="json",
                     temperature=0.0
                 )
 
-                return response.text
+                descriptor.transcription = response.text

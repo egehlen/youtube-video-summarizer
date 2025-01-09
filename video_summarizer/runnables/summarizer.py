@@ -4,7 +4,7 @@ import os
 from langchain_groq import ChatGroq
 from ..helpers import suppress_stdout
 from langchain_core.prompts import ChatPromptTemplate
-from ..common import VideoSummary, global_console, VideoDescriptor
+from ..common import VideoSummary, global_console, VideoDescriptor, VideoMetadata
 import json
 
 load_dotenv()
@@ -18,16 +18,19 @@ class SummarizerRunnable(Runnable):
 
     def invoke(self, input: VideoDescriptor, *args) -> VideoDescriptor:
         global_console.log("Generating summary")
-        return self.summarize_content(input)
+        self.summarize_content(input)
+        self.translate_metadata(input)
+        return input
 
-    def summarize_content(self, input: VideoDescriptor) -> VideoDescriptor:
+    def summarize_content(self, descriptor: VideoDescriptor) -> None:
 
         with suppress_stdout():
 
             base_path = os.path.dirname(__file__)
-            file_path = os.path.abspath(os.path.join(base_path, "..", "system_prompt.md"))
+            file_path = os.path.abspath(os.path.join(base_path, "..", "prompts/summarization.md"))
 
-            with open(file_path) as f: system_prompt = f.read()
+            with open(file_path) as f:
+                system_prompt = f.read()
 
             prompt = ChatPromptTemplate.from_messages([
                 ("system", system_prompt),
@@ -38,19 +41,55 @@ class SummarizerRunnable(Runnable):
             result = chain.invoke(
                 {
                     "json_schema": json.dumps(VideoSummary.model_json_schema(), indent=2),
-                    "output_language": "Brazilian Portuguese",
-                    "input": input.transcription
+                    "output_language": descriptor.target_language,
+                    "input": descriptor.transcription
                 }
             )
 
             sanitized_content = result.content \
                 .replace("\n", "") \
                 .replace("  ", " ") \
-                .replace("```", "")
+                .replace("```", "") \
+                .replace("json{", "{")
 
-            summary_object = VideoSummary.model_validate_json(sanitized_content)
-            input.summary = summary_object.summary
-            input.highlights = summary_object.highlights
-            input.steps = summary_object.steps
+            summary_object = VideoSummary.model_validate_json(sanitized_content, strict=False)
+            descriptor.summary = summary_object.summary
+            descriptor.highlights = summary_object.highlights
+            descriptor.steps = summary_object.steps
 
-            return input
+    def translate_metadata(self, descriptor: VideoDescriptor) -> None:
+
+        with suppress_stdout():
+
+            base_path = os.path.dirname(__file__)
+            file_path = os.path.abspath(os.path.join(base_path, "..", "prompts/metadata_translation.md"))
+
+            with open(file_path) as f:
+                system_prompt = f.read()
+
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", system_prompt),
+                ("human", "{input}"),
+            ])
+
+            chain = prompt | self.llm_client
+            result = chain.invoke(
+                {
+                    "json_schema": json.dumps(VideoMetadata.model_json_schema(), indent=2),
+                    "output_language": descriptor.target_language,
+                    "input": {
+                        "title": descriptor.title,
+                        "categories": descriptor.categories
+                    }
+                }
+            )
+
+            sanitized_content = result.content \
+                .replace("\n", "") \
+                .replace("  ", " ") \
+                .replace("```", "") \
+                .replace("json{", "{")
+
+            metadata_object = VideoMetadata.model_validate_json(sanitized_content, strict=False)
+            descriptor.title = metadata_object.title
+            descriptor.categories = metadata_object.categories
