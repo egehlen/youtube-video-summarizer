@@ -35,5 +35,4 @@ def get_target_language() -> str:
         args = argument_parser.parse_args()
         return supported_languages[args.translate] or default_language
     except:
-        print("There was an error retrieving the argument \"--translate\". Using default language (English)")
         return default_language

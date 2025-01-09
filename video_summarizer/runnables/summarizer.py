@@ -19,19 +19,17 @@ class SummarizerRunnable(Runnable):
 
     def invoke(self, input: VideoDescriptor, *args) -> VideoDescriptor:
         global_console.log("Generating summary")
-        self.summarize_content(input)
-        self.translate_metadata(input)
+        self.summarize(input)
+        self.translate(input)
         return input
 
-    def summarize_content(self, descriptor: VideoDescriptor) -> None:
+    def summarize(self, descriptor: VideoDescriptor) -> None:
 
         with suppress_stdout():
 
             base_path = os.path.dirname(__file__)
             file_path = os.path.abspath(os.path.join(base_path, "..", "prompts/summarization.md"))
-
-            with open(file_path) as f:
-                system_prompt = f.read()
+            with open(file_path) as f: system_prompt = f.read()
 
             prompt = ChatPromptTemplate.from_messages([
                 ("system", system_prompt),
@@ -42,7 +40,6 @@ class SummarizerRunnable(Runnable):
             result = chain.invoke(
                 {
                     "json_schema": json.dumps(VideoSummary.model_json_schema(), indent=2),
-                    "output_language": descriptor.target_language,
                     "input": descriptor.transcription
                 }
             )
@@ -53,20 +50,18 @@ class SummarizerRunnable(Runnable):
                 .replace("```", "") \
                 .replace("json{", "{")
 
-            summary_object = VideoSummary.model_validate_json(sanitized_content, strict=False)
-            descriptor.summary = summary_object.summary
-            descriptor.highlights = summary_object.highlights
-            descriptor.steps = summary_object.steps
+            summary_object = json.loads(sanitized_content)
+            descriptor.summary = summary_object["summary"]
+            descriptor.highlights = summary_object["highlights"]
+            descriptor.steps = summary_object["steps"]
 
-    def translate_metadata(self, descriptor: VideoDescriptor) -> None:
+    def translate(self, descriptor: VideoDescriptor) -> None:
 
         with suppress_stdout():
 
             base_path = os.path.dirname(__file__)
-            file_path = os.path.abspath(os.path.join(base_path, "..", "prompts/metadata_translation.md"))
-
-            with open(file_path) as f:
-                system_prompt = f.read()
+            file_path = os.path.abspath(os.path.join(base_path, "..", "prompts/translation.md"))
+            with open(file_path) as f: system_prompt = f.read()
 
             prompt = ChatPromptTemplate.from_messages([
                 ("system", system_prompt),
@@ -80,7 +75,10 @@ class SummarizerRunnable(Runnable):
                     "output_language": descriptor.target_language,
                     "input": {
                         "title": descriptor.title,
-                        "categories": descriptor.categories
+                        "categories": descriptor.categories,
+                        "summary": descriptor.summary,
+                        "highlights": descriptor.highlights,
+                        "steps": descriptor.steps
                     }
                 }
             )
@@ -91,6 +89,10 @@ class SummarizerRunnable(Runnable):
                 .replace("```", "") \
                 .replace("json{", "{")
 
-            metadata_object = VideoMetadata.model_validate_json(sanitized_content, strict=False)
-            descriptor.title = metadata_object.title
-            descriptor.categories = metadata_object.categories
+            result_object = json.loads(sanitized_content)
+
+            descriptor.title = result_object["title"]
+            descriptor.categories = result_object["categories"]
+            descriptor.summary = result_object["summary"]
+            descriptor.highlights = result_object["highlights"]
+            descriptor.steps = result_object["steps"]

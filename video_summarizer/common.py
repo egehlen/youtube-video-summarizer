@@ -35,3 +35,6 @@ class VideoSummary(BaseModel):
 class VideoMetadata(BaseModel):
     title: str
     categories: str
+    summary: str
+    highlights: List[str]
+    steps: List[str]

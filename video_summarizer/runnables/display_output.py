@@ -67,6 +67,6 @@ class DisplayOutputRunnable(Runnable):
             return Table()
 
         table = Table(box=SIMPLE)
-        table.add_column("Steps", justify="left", style="magenta")
+        table.add_column("Steps", justify="left", style="green")
         for i, step in enumerate(descriptor.steps): table.add_row(f" {(i+1)}. {step}")
         return table
