@@ -20,7 +20,7 @@ class AudioProcessorRunnable(Runnable):
                     {output_file}"
 
         file_id = uuid.uuid4()
-        output_file = f"output/{file_id}.mp3"
+        output_file = f"video_summarizer/output/{file_id}.mp3"
 
         subprocess.call(
             command.format(input_file=descriptor.raw_audio_file, output_file=output_file),

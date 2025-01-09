@@ -13,7 +13,8 @@ class SummarizerRunnable(Runnable):
 
     def __init__(self):
         self.llm_client = ChatGroq(
-            model_name="llama-3.3-70b-versatile"
+            model_name="llama-3.3-70b-versatile",
+            temperature=0.4
         )
 
     def invoke(self, input: VideoDescriptor, *args) -> VideoDescriptor:

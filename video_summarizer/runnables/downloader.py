@@ -17,7 +17,7 @@ class DownloaderRunnable(Runnable):
         with suppress_stdout():
 
             file_id = uuid.uuid4()
-            file_path = f"output/{file_id}.mp3"
+            file_path = f"video_summarizer/output/{file_id}.mp3"
 
             with yt_dlp.YoutubeDL({"extract_audio": True, "format": "bestaudio", "outtmpl": file_path}) as video:
 
