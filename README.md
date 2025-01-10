@@ -53,7 +53,6 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 4. Install FFMPEG
 This project requires FFmpeg for pre-processing the audio. Install it using the following instructions:
 
 #### Linux (Debian-based)
@@ -70,7 +69,8 @@ brew install ffmpeg
 #### Windows
 Download the FFmpeg binaries from FFmpeg.org, extract them, and add the bin directory to your system's PATH.
 
-### 5. Setup a Groq API Key
+### 4. Setup a Groq API Key
+Groq offers a free tier. You can get an API key for free:
 
 1. Go to the [GroqCloud website](https://console.groq.com/).
 2. Create an account or log in.
