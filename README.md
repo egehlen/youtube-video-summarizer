@@ -1,4 +1,4 @@
-# YouTube Video Summarizer
+# YouTube Video Summarizer ▶️
 
 **YouTube Video Summarizer** is a command-line tool developed to summarize YouTube videos, offering:
 - **General Summary**: A concise synopsis of the video content.
@@ -12,14 +12,14 @@ I took the opportunity to explore concepts like:
 
 ---
 
-## Requirements
+## Requirements 📝
 
 ```
 Python 3.10+
 FFMPEG library
 ```
 
-## Installation
+## Installation 💿
 
 Follow the steps below to set up the project in your local environment:
 
@@ -87,7 +87,7 @@ GROQ_API_KEY=your_api_key_here
 
 ---
 
-## How to Use
+## How to Use 🔨
 
 1. Ensure the virtual environment is activated.
 2. Run the following command to start the summarizer:
@@ -104,7 +104,7 @@ python -m video_summarizer --translate <language>
 
 ---
 
-## Screenshots
+## Screenshots 📸
 
 ### News or informational content
 Video: https://youtu.be/rr4cRS2gwsY?si=CVhtPDy4u97TLHBb
@@ -126,8 +126,14 @@ Output with summary and steps:
 
 ---
 
-## Limitations
+## Limitations 🚫
 - Long video content may encounter issues due to API rate limits. If that happens, check your [rate limits](https://console.groq.com/settings/limits) or wait a few minutes.
 - Videos without speech or recognizable audio cannot be summarized.
 - Audio with multiple simultaneous speakers may cause difficulties in generating summaries.
 - Poor quality or unclear audio can compromise the accuracy of the summary.
+
+---
+
+## Disclaimer ⚠️
+
+This project is for educational purposes only. It is not production-ready, nor is it intended for commercial use. The author is not responsible for any misuse of this tool.
