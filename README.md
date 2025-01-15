@@ -12,6 +12,10 @@ I took the opportunity to explore concepts like:
 
 ---
 
+> [!WARNING]  
+> YouTube has changed its policies and most of python libraries used to download the audio/video are not working anymore. The open-source community is currently looking for a solution.
+> Unfortunately, while these restrictions continue and we don't find solutions for that, this project and many others may not work at all.
+
 ## Requirements 📝
 
 ```
